@@ -1,7 +1,18 @@
 # This repo contains my final project for parallel programming class in go.  
-You can find the full report of the project along with design decisions on [report/report.pdf](https://github.com/badbayesian/traffic-simulaion/blob/master/report/report.pdf)
+You can find the full report of the project along with design decisions and benchmarks on [report/report.pdf.](https://github.com/badbayesian/traffic-simulaion/blob/master/report/report.pdf)
 
-## Traffic simulation
+## TL;Dr
+### Data Structure and Algorithm
+The traffic simulation is fundamentally a undirected graph with weighted edges where cars find a shortest path between two locations using Dijkstra. For the graph structure,I represented the edges as nested maps (hash tables) as I needed fast edge lookups and writes and could leverage that the graph structure did not change (more details in report). After each round, each weighted edge changed it weight with respect to the number of cars that used that edge as an analogy to traffic. Each experiment was iterated until a steady state(s) was reached, wherein the cars do not change paths or change paths in a cyclical manner.
+
+
+### Concurrency
+There are 3 main aspects of concurrency in the simulation.
+1. Each car within the experiment runs concurrently with locks to synchronize updating the edge weights. An alternative version used Sync.Cond but it was slower.
+2. Each experiment runs concurrently as an embarrassingly parallelizable process as each experiment is independent.
+3. FanIn/FanOut infrastructure to manage concurrent elements of 1. and 2. 
+
+## Running Traffic simulation
 
 All datasets are generated from running the experiment
 
